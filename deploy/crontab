@@ -1,0 +1,20 @@
+# Music Dashboard: günlük veri çekimi için cron tanımı
+#
+# Kurulum (Linux sunucu):
+#   1. Proje yolunu aşağıdaki satırda kendi yolunuzla değiştirin.
+#   2. Script'i çalıştırılabilir yapın:  chmod +x scripts/daily_fetch.sh
+#   3. Cron'a ekleyin:                  crontab deploy/crontab
+#      (mevcut cron görevleriniz varsa bunun yerine `crontab -e` ile satırı ekleyin)
+#   4. Kontrol edin:                    crontab -l
+#
+# Zamanlama: her gün 03:15 (İstanbul saati). Last.fm listeleri gün içinde yavaş değiştiği
+# için günde bir çekim yeterlidir; her çekim veritabanında ayrı bir snapshot olarak saklanır.
+#
+# Alanlar: dakika saat ayın-günü ay haftanın-günü  komut
+# CRON_TZ satırını desteklemeyen cron sürümlerinde saat, sunucunun saat dilimine göre çalışır.
+
+CRON_TZ=Europe/Istanbul
+SHELL=/bin/bash
+PATH=/usr/local/bin:/usr/bin:/bin
+
+15 3 * * * /opt/music-dashboard/scripts/daily_fetch.sh

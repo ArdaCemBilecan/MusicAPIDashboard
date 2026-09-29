@@ -1,0 +1,27 @@
+# Gizli bilgiler: API key, secret ve şifreler burada. ASLA repoya girmemeli.
+.env
+.env.*
+!.env.example
+
+# Producer önbellekleri (etiket ve ülke önbelleği) ve yerel veri
+data/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+*.egg-info/
+.pytest_cache/
+
+# Loglar (günlük çekim script'leri logs/ klasörüne yazar)
+logs/
+*.log
+
+# Editör ve işletim sistemi dosyaları
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini

@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Music Dashboard</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect x='3' y='12' width='4' height='9' rx='1' fill='%232a78d6'/%3E%3Crect x='10' y='6' width='4' height='15' rx='1' fill='%232a78d6'/%3E%3Crect x='17' y='9' width='4' height='12' rx='1' fill='%232a78d6'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="/static/vendor/gridstack.min.css">
+  <link rel="stylesheet" href="/static/css/app.css">
+</head>
+<body>
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+      <symbol id="i-edit" viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16v4z"/></symbol>
+      <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></symbol>
+      <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20 11a8 8 0 1 0-2.3 5.7M20 4v7h-7"/></symbol>
+      <symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/></symbol>
+      <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+      <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></symbol>
+      <symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 15V4M7 9l5-5 5 5M5 20h14"/></symbol>
+      <symbol id="i-table" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="14" rx="1"/><path d="M4 10h16M4 15h16M10 5v14"/></symbol>
+      <symbol id="i-chart" viewBox="0 0 24 24"><path d="M5 20V11M12 20V5M19 20v-7"/></symbol>
+      <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 0 1 9.5 4 8 8 0 1 0 20 14.5z"/></symbol>
+      <symbol id="i-filter" viewBox="0 0 24 24"><path d="M4 5h16l-6 7v6l-4 2v-8z"/></symbol>
+      <symbol id="i-chevron" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></symbol>
+      <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></symbol>
+      <symbol id="i-grip" viewBox="0 0 24 24"><circle cx="9" cy="6" r="1"/><circle cx="15" cy="6" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="9" cy="18" r="1"/><circle cx="15" cy="18" r="1"/></symbol>
+    </defs>
+  </svg>
+
+  <header class="topbar">
+    <div class="brand">
+      <svg class="brand-mark" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="12" width="4" height="9" rx="1"/><rect x="10" y="6" width="4" height="15" rx="1"/><rect x="17" y="9" width="4" height="12" rx="1"/></svg>
+      <span>Music Dashboard</span>
+    </div>
+
+    <div class="dash-picker">
+      <label class="sr-only" for="dashSelect">Dashboard</label>
+      <select id="dashSelect"></select>
+      <button class="icon-btn" id="btnNew" title="Yeni dashboard"><svg><use href="#i-plus"/></svg></button>
+      <button class="icon-btn" id="btnRename" title="Yeniden adlandır"><svg><use href="#i-edit"/></svg></button>
+      <button class="icon-btn" id="btnDelete" title="Dashboard'u sil"><svg><use href="#i-trash"/></svg></button>
+    </div>
+
+    <div class="spacer"></div>
+    <span class="save-status" id="saveStatus" aria-live="polite"></span>
+    <span class="last-update" id="lastUpdate"></span>
+    <button class="icon-btn" id="btnRefreshAll" title="Tüm widget'ları yenile"><svg><use href="#i-refresh"/></svg></button>
+    <button class="icon-btn" id="btnExport" title="JSON olarak dışa aktar"><svg><use href="#i-download"/></svg></button>
+    <button class="icon-btn" id="btnImport" title="JSON içe aktar"><svg><use href="#i-upload"/></svg></button>
+    <input type="file" id="importFile" accept="application/json,.json" hidden>
+    <button class="icon-btn" id="btnCountries" title="Sanatçı ülkeleri"><svg><use href="#i-globe"/></svg></button>
+    <button class="icon-btn" id="btnTheme" title="Açık / koyu tema"><svg><use href="#i-moon"/></svg></button>
+    <button class="btn primary" id="btnEdit" aria-pressed="false">Düzenle</button>
+  </header>
+
+  <div class="layout">
+    <aside class="library" id="library" aria-label="Widget kütüphanesi">
+      <div class="library-head">
+        <h2>Widget ekle</h2>
+        <p>Bir widget'ı sürükleyip panoya bırakın ya da tıklayın.</p>
+        <input type="search" id="libSearch" placeholder="Ara…" aria-label="Widget ara">
+      </div>
+      <div class="library-body" id="libraryBody"></div>
+    </aside>
+
+    <main class="board">
+      <div class="filterbar" id="filterBar" role="toolbar" aria-label="Dashboard filtreleri"></div>
+      <div class="empty" id="emptyState" hidden>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-chart"/></svg>
+        <h3>Bu dashboard boş</h3>
+        <p>Soldaki kütüphaneden bir widget sürükleyip buraya bırakın.</p>
+      </div>
+      <div class="grid-stack" id="grid"></div>
+    </main>
+  </div>
+
+  <!-- Widget ayarları -->
+  <dialog id="widgetDialog" class="dialog wide">
+    <form method="dialog" id="widgetForm">
+      <header class="dialog-head">
+        <div>
+          <h2 id="wdTitle">Widget ayarları</h2>
+          <p id="wdDesc" class="muted"></p>
+        </div>
+        <button type="button" class="icon-btn" data-close title="Kapat"><svg><use href="#i-x"/></svg></button>
+      </header>
+      <div class="dialog-body split">
+        <div class="form-col" id="wdFields"></div>
+        <div class="preview-col">
+          <div class="preview-label">Önizleme</div>
+          <div class="preview" id="wdPreview"></div>
+        </div>
+      </div>
+      <footer class="dialog-foot">
+        <span class="form-error" id="wdError" role="alert"></span>
+        <button type="button" class="btn" data-close>İptal</button>
+        <button type="submit" class="btn primary" id="wdSubmit">Ekle</button>
+      </footer>
+    </form>
+  </dialog>
+
+  <!-- Dashboard filtresi (değişken) ayarları -->
+  <dialog id="varDialog" class="dialog">
+    <form method="dialog" id="varForm">
+      <header class="dialog-head">
+        <div>
+          <h2 id="varTitle">Filtre ekle</h2>
+          <p class="muted">Filtre panonun üstünde görünür. Widget'ların parametrelerini bu filtreye bağlayınca seçim
+            değiştikçe hepsi birlikte güncellenir.</p>
+        </div>
+        <button type="button" class="icon-btn" data-close title="Kapat"><svg><use href="#i-x"/></svg></button>
+      </header>
+      <div class="dialog-body var-form">
+        <div class="field"><label for="varType">Tür</label>
+          <select id="varType">
+            <option value="country">Ülke</option>
+            <option value="artist">Sanatçı</option>
+            <option value="tag">Tür (etiket)</option>
+          </select></div>
+        <div class="field"><label for="varLabel">Görünen ad</label>
+          <input type="text" id="varLabel" maxlength="40" placeholder="ör. Sanatçıların ülkesi"></div>
+        <div class="field check"><label><input type="checkbox" id="varMulti"> Birden fazla seçime izin ver</label>
+          <div class="hint">Çoklu seçim özel sorgu ve SQL widget'larında tüm seçimleri kullanır; hazır şablonlar ilk seçimi kullanır.</div></div>
+        <div class="field"><div class="label">Değer</div><div id="varValue"></div></div>
+        <div class="field check"><label><input type="checkbox" id="varPick" checked> Grafiklerde tıklanan değerle güncellensin</label>
+          <div class="hint">Ör. bir sanatçı çubuğuna tıklayınca bu filtre o sanatçı olur.</div></div>
+        <div class="field"><div class="label">Kod adı</div><code id="varCode" class="var-code"></code>
+          <div class="hint">SQL widget'larında bu adla kullanılır.</div></div>
+      </div>
+      <footer class="dialog-foot">
+        <span class="form-error" id="varError" role="alert"></span>
+        <button type="button" class="btn" data-close>İptal</button>
+        <button type="submit" class="btn primary" id="varSubmit">Ekle</button>
+      </footer>
+    </form>
+  </dialog>
+
+  <!-- Sanatçı ülkeleri -->
+  <dialog id="countriesDialog" class="dialog wide">
+    <div class="dialog-head">
+      <div>
+        <h2>Sanatçı ülkeleri</h2>
+        <p class="muted">Yurtdışı payı, sanatçının ana ülkesine göre hesaplanır. Öncelik sırası: elle girilen →
+          MusicBrainz → tahmini (sanatçının en çok dinlendiği ülke). Yanlış olanları buradan düzeltebilirsiniz.</p>
+      </div>
+      <button type="button" class="icon-btn" data-close title="Kapat"><svg><use href="#i-x"/></svg></button>
+    </div>
+    <div class="dialog-body">
+      <div class="ac-summary" id="acSummary"></div>
+      <div class="ac-filters">
+        <input type="search" id="acSearch" placeholder="Sanatçı ara…" aria-label="Sanatçı ara">
+        <select id="acSource" aria-label="Kaynak">
+          <option value="">Tüm kaynaklar</option>
+          <option value="Tahmini">Tahmini</option>
+          <option value="MusicBrainz">MusicBrainz</option>
+          <option value="Elle girildi">Elle girildi</option>
+        </select>
+        <select id="acHome" aria-label="Ülke"><option value="">Tüm ülkeler</option></select>
+      </div>
+      <div class="ac-table-wrap"><table class="data" id="acTable">
+        <thead><tr><th>Sanatçı</th><th class="num">Toplam dinleyici</th><th class="num">Ülke sayısı</th><th>Ana ülke</th><th>Kaynak</th></tr></thead>
+        <tbody></tbody>
+      </table></div>
+      <p class="hint" id="acHint"></p>
+    </div>
+    <div class="dialog-foot">
+      <button type="button" class="btn primary" data-close>Bitti</button>
+    </div>
+  </dialog>
+
+  <!-- Basit soru / onay penceresi -->
+  <dialog id="askDialog" class="dialog">
+    <form method="dialog" id="askForm">
+      <header class="dialog-head"><h2 id="askTitle"></h2></header>
+      <div class="dialog-body">
+        <p id="askText" class="muted"></p>
+        <input type="text" id="askInput" maxlength="80">
+      </div>
+      <footer class="dialog-foot">
+        <button type="button" class="btn" data-close>İptal</button>
+        <button type="submit" class="btn primary" id="askOk">Tamam</button>
+      </footer>
+    </form>
+  </dialog>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="/static/vendor/gridstack-all.js"></script>
+  <script src="/static/vendor/echarts.min.js"></script>
+  <script src="/static/js/charts.js"></script>
+  <script src="/static/js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,7 @@
+# Shell script'ler ve cron dosyası Windows'ta da LF satır sonuyla saklansın;
+# CRLF olursa Linux'ta "bad interpreter" hatası verir.
+*.sh        text eol=lf
+deploy/crontab text eol=lf
+
+# PowerShell script'leri Windows satır sonuyla
+*.ps1       text eol=crlf
